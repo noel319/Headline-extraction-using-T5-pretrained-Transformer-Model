@@ -20,8 +20,56 @@ for doc in corpus:
     tokenized_docs.append(tokens)
 
 #printing the all the tokens for all documents and the token lenghts for each document
-print('\nTokenized Documents:')
-for i, doc in enumerate(tokenized_docs):
-    print(f"Docunent {i+1} Tokens:", doc[:], "...(Total:", len(doc), ")")
-    print() # add an empty print statement for a new line
+# print('\nTokenized Documents:')
+# for i, doc in enumerate(tokenized_docs):
+#     print(f"Docunent {i+1} Tokens:", doc[:], "...(Total:", len(doc), ")")
+#     print() # add an empty print statement for a new line
+
+# Lowercasing
+
+lowercased_docs =[]
+for tokens in tokenized_docs:
+    lowercased_tokens = [token.lower() for token in tokens]
+    lowercased_docs.append(lowercased_tokens)
+
+# Print the tokenized and lowercased documents
+
+# print("\nTokenized and Lowercased Documents:")
+# for i, doc in enumerate(lowercased_docs):
+#     print(f"Document {i+1} Tokens:", doc, "...(Total:", len(doc), ")\n")
+
+# Removeing Punctuations
+
+no_punctuation_docs = []
+for tokens in lowercased_docs:
+    filtered_tokens = [token for token in tokens if token.isalpha()] # Remove punctuation
+    no_punctuation_docs.append(filtered_tokens)
+
+# Print the documents without punctuation, along with their token counts
+
+# print("\nDocuments with Tokens Lowercased and Punctuation Removed:")
+# for i , doc in enumerate(no_punctuation_docs):
+#     print(f"Document {i+1} Tokens:", doc, "... (Total:", len(doc), ")\n")
+
+# Stopwords Removal
+
+#stop words Removal
+
+from nltk.corpus import stopwords
+#Get the Engilsh stopwords
+stop_words = set(stopwords.words('english'))
+# Remove stopwords
+no_stopwords_docs=[]
+for tokens in no_punctuation_docs:
+    filtered_tokens = [token for token in tokens if token not in stop_words]
+    no_stopwords_docs.append(filtered_tokens)
+
+# Print the documents without stopwords, along with their token counts
+print("\nDocuments with Tokens Lowercased, Punctuation Removed, and Stopwords Removed:")
+for i, doc in enumerate(no_stopwords_docs):
+    print(f"Document {i+1} Tokens:", doc, "...(Total:", len(doc),")\n")
+    
+
+    
+
 
