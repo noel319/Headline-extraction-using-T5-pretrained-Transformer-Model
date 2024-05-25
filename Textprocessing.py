@@ -72,11 +72,26 @@ for tokens in no_stopwords_docs:#we'll start from the already stopword-removed d
     no_stopwords_including_also_docs.append(filtered_tokens)
 
 # Print the documents without stopwords, along with their token counts
-print("\nDocuments with Tokens Lowercased, Punctuation Removed, and Stopwords Removed:")
-for i, doc in enumerate(no_stopwords_including_also_docs):
-    print(f"Document {i+1} Tokens:", doc, "...(Total:", len(doc),")\n")
+# print("\nDocuments with Tokens Lowercased, Punctuation Removed, and Stopwords Removed:")
+# for i, doc in enumerate(no_stopwords_including_also_docs):
+#     print(f"Document {i+1} Tokens:", doc, "...(Total:", len(doc),")\n")
     
+# Stemming
 
+from nltk.stem import PorterStemmer
+#Initialize the Porter Stemmer
+stemmer = PorterStemmer()
+
+# Apply stemming to the documents
+stemmed_docs=[]
+for tokens in no_stopwords_including_also_docs:
+    stemmed_tokens = [stemmer.stem(token) for token in tokens]
+    stemmed_docs.append(stemmed_tokens)
+# Print the stemmed documents, along with their token counts
+print("\nDocuments with Tokens Lowercased, Punctuation Removed, Stopwords Including 'also' Removed, and Stemmed:")
+for i, doc in enumerate(stemmed_docs):
+    print(f"Document {i+1} Tokens:", doc, "...(Total:", len(doc), ")\n")
+    
     
 
 
