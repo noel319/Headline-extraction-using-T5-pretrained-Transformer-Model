@@ -19,6 +19,22 @@ train = pd.read_csv('Classification/train.csv')
 validation = pd.read_csv('Classification/validation.csv')
 test = pd.read_csv('Classification/test.csv')
 
-# View the train data
+# Load the spacy Engilsh model
+# Since we are not using NER, we can disable it to speedup
+nlp = spacy.load("en_core_web_sm", disable='ner')
 
-print(train.head())
+def preprocess_text(texts):
+    # lemmatize the tokens and store them in a list
+    processed_texts = []
+    for doc in nlp.pipe(texts, n_process=-1):
+        lemmatized_tokens = [ token.lemma_.lower() for token in doc if token.is_alpha and token.lemma_ not in nlp.Defaults.stop_words]
+        # Join the lemmatized tokens into a string
+        processed_text = " ".join(lemmatized_tokens)
+        processed_texts.append(preprocess_text)
+    return processed_texts
+
+# apply preprocess_text function to user_review column
+
+train['user_review'] = preprocess_text(train['user_review']) 
+validation['user_review'] = preprocess_text(validation['user_review']) 
+test['user_review'] = preprocess_text(test['user_review']) 
