@@ -63,13 +63,113 @@ no_stopwords_docs=[]
 for tokens in no_punctuation_docs:
     filtered_tokens = [token for token in tokens if token not in stop_words]
     no_stopwords_docs.append(filtered_tokens)
+# Add 'also' to the set of stopwords
+stop_words.add('also')
+# Remove stopwords again, now including 'also'
+no_stopwords_including_also_docs=[]
+for tokens in no_stopwords_docs:#we'll start from the already stopword-removed docs
+    filtered_tokens = [token for token in tokens if token not in stop_words]
+    no_stopwords_including_also_docs.append(filtered_tokens)
 
 # Print the documents without stopwords, along with their token counts
-print("\nDocuments with Tokens Lowercased, Punctuation Removed, and Stopwords Removed:")
-for i, doc in enumerate(no_stopwords_docs):
-    print(f"Document {i+1} Tokens:", doc, "...(Total:", len(doc),")\n")
+# print("\nDocuments with Tokens Lowercased, Punctuation Removed, and Stopwords Removed:")
+# for i, doc in enumerate(no_stopwords_including_also_docs):
+#     print(f"Document {i+1} Tokens:", doc, "...(Total:", len(doc),")\n")
     
+# Stemming
 
-    
+from nltk.stem import PorterStemmer
+#Initialize the Porter Stemmer
+stemmer = PorterStemmer()
+
+# Apply stemming to the documents
+stemmed_docs=[]
+for tokens in no_stopwords_including_also_docs:
+    stemmed_tokens = [stemmer.stem(token) for token in tokens]
+    stemmed_docs.append(stemmed_tokens)
+# Print the stemmed documents, along with their token counts
+# print("\nDocuments with Tokens Lowercased, Punctuation Removed, Stopwords Including 'also' Removed, and Stemmed:")
+# for i, doc in enumerate(stemmed_docs):
+#     print(f"Document {i+1} Tokens:", doc, "...(Total:", len(doc), ")\n")
+
+# Lemmatization   
+from nltk.stem import WordNetLemmatizer
+# Initialize the Wordnet Lemmatizer
+lemmatizer = WordNetLemmatizer()
+# Apply lemmatization to the documents
+lemmatized_docs = []
+for tokens in stemmed_docs:
+    lemmatized_tokens = [lemmatizer.lemmatize(token) for token in tokens]
+    lemmatized_docs.append(lemmatized_tokens)
+
+#pring the lemmatized documents, along with their token counts
+# print("\nDocuments with Tokens Lowercased, Punctuation Removed, Stopwords Including 'also' Removed, and Lemmatized:")
+# for i, doc in enumerate(lemmatized_docs):
+#     print(f"Document {i+1} Tokens:", doc, "...(Total:", len(doc), ")\n")
+
+# Install spacy download en_core_web_sm
+import spacy
+# Loading the English language model with lemmatization capabilities
+nlp = spacy.load("en_core_web_sm")
+#Apply lemmatization using spaCy
+
+spacy_lemmatized_docs =[]
+for doc in no_stopwords_including_also_docs:
+    #Process the document using spaCy
+    spacy_doc = nlp(' '.join(doc))
+    # Extract lemmatized tokens
+    spacy_lemmatized_tokens=[token.lemma_ for token in spacy_doc]
+    spacy_lemmatized_docs.append(spacy_lemmatized_tokens)
+
+# Print the lemmatized documents using spaCy, along with their token counts
+# print("\nDocuments Lemmatized using spaCy:")
+# for i, doc in enumerate(spacy_lemmatized_docs):
+#     print(f"Document {i+1} Tokens:", doc, "... (Total:", len(doc), ")\n")
+
+#Vocabulary Building
+
+#Initialize an empty set to store the vocabulary
+vocabulary = set()
+
+#Iterate over each document and add each unique word to the vocabulary set
+for doc in spacy_lemmatized_docs:
+    for token in doc:
+        vocabulary.add(token)
+# Convert the set to a sorted list if you want the vocabulary to be orderd
+vocabulary = sorted(list(vocabulary))
+#Print the vocabulary
+# print("Vocabulary:")
+# print(vocabulary)
+# print(f"Vocabulary Size: {len(vocabulary)}")
+
+# Vectorization
+ #import necessary library
+
+from sklearn.feature_extraction.text import CountVectorizer
+
+# Convert the lemmatized documents back into string format for vectorization
+documents = [" ".join(doc) for doc in spacy_lemmatized_docs]
+
+# One-Hot Encoding
+
+vectorizer_one = CountVectorizer(vocabulary=vocabulary, binary=True)
+
+#fit and transform the documents
+X= vectorizer_one.fit_transform(documents)
+# Get the feature names(vocabulary)
+feature_names = vectorizer_one.get_feature_names_out()
+
+#Display the feature names and the shape of the document-term matrix
+# print("Feature Names:", feature_names)
+# print("Document-Term Matrix Shape:", X.shape)
+
+# If you want to see the frequency count of each word in the document
+
+frequency_counts = X.toarray()
+# print("Frequency Counts:\n", frequency_counts)
+
+df = pd.DataFrame(X.toarray(), columns=[feature_names])
+df.to_csv('data.txt', sep='\t', index=False)
+
 
 
