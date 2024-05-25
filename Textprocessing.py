@@ -98,13 +98,47 @@ from nltk.stem import WordNetLemmatizer
 lemmatizer = WordNetLemmatizer()
 # Apply lemmatization to the documents
 lemmatized_docs = []
-for tokens in no_stopwords_including_also_docs:
+for tokens in stemmed_docs:
     lemmatized_tokens = [lemmatizer.lemmatize(token) for token in tokens]
     lemmatized_docs.append(lemmatized_tokens)
 
 #pring the lemmatized documents, along with their token counts
-print("\nDocuments with Tokens Lowercased, Punctuation Removed, Stopwords Including 'also' Removed, and Lemmatized:")
-for i, doc in enumerate(lemmatized_docs):
-    print(f"Document {i+1} Tokens:", doc, "...(Total:", len(doc), ")\n")
+# print("\nDocuments with Tokens Lowercased, Punctuation Removed, Stopwords Including 'also' Removed, and Lemmatized:")
+# for i, doc in enumerate(lemmatized_docs):
+#     print(f"Document {i+1} Tokens:", doc, "...(Total:", len(doc), ")\n")
 
+# Install spacy download en_core_web_sm
+import spacy
+# Loading the English language model with lemmatization capabilities
+nlp = spacy.load("en_core_web_sm")
+#Apply lemmatization using spaCy
+
+spacy_lemmatized_docs =[]
+for doc in no_stopwords_including_also_docs:
+    #Process the document using spaCy
+    spacy_doc = nlp(' '.join(doc))
+    # Extract lemmatized tokens
+    spacy_lemmatized_tokens=[token.lemma_ for token in spacy_doc]
+    spacy_lemmatized_docs.append(spacy_lemmatized_tokens)
+
+# Print the lemmatized documents using spaCy, along with their token counts
+# print("\nDocuments Lemmatized using spaCy:")
+# for i, doc in enumerate(spacy_lemmatized_docs):
+#     print(f"Document {i+1} Tokens:", doc, "... (Total:", len(doc), ")\n")
+
+#Vocabulary Building
+
+#Initialize an empty set to store the vocabulary
+vocabulary = set()
+
+#Iterate over each document and add each unique word to the vocabulary set
+for doc in spacy_lemmatized_docs:
+    for token in doc:
+        vocabulary.add(token)
+# Convert the set to a sorted list if you want the vocabulary to be orderd
+vocabulary = sorted(list(vocabulary))
+#Print the vocabulary
+print("Vocabulary:")
+print(vocabulary)
+print(f"Vocabulary Size: {len(vocabulary)}")
 
