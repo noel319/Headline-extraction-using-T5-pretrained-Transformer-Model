@@ -63,10 +63,17 @@ no_stopwords_docs=[]
 for tokens in no_punctuation_docs:
     filtered_tokens = [token for token in tokens if token not in stop_words]
     no_stopwords_docs.append(filtered_tokens)
+# Add 'also' to the set of stopwords
+stop_words.add('also')
+# Remove stopwords again, now including 'also'
+no_stopwords_including_also_docs=[]
+for tokens in no_stopwords_docs:#we'll start from the already stopword-removed docs
+    filtered_tokens = [token for token in tokens if token not in stop_words]
+    no_stopwords_including_also_docs.append(filtered_tokens)
 
 # Print the documents without stopwords, along with their token counts
 print("\nDocuments with Tokens Lowercased, Punctuation Removed, and Stopwords Removed:")
-for i, doc in enumerate(no_stopwords_docs):
+for i, doc in enumerate(no_stopwords_including_also_docs):
     print(f"Document {i+1} Tokens:", doc, "...(Total:", len(doc),")\n")
     
 
