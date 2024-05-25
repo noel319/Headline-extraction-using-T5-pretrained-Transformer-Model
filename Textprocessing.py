@@ -138,7 +138,38 @@ for doc in spacy_lemmatized_docs:
 # Convert the set to a sorted list if you want the vocabulary to be orderd
 vocabulary = sorted(list(vocabulary))
 #Print the vocabulary
-print("Vocabulary:")
-print(vocabulary)
-print(f"Vocabulary Size: {len(vocabulary)}")
+# print("Vocabulary:")
+# print(vocabulary)
+# print(f"Vocabulary Size: {len(vocabulary)}")
+
+# Vectorization
+ #import necessary library
+
+from sklearn.feature_extraction.text import CountVectorizer
+
+# Convert the lemmatized documents back into string format for vectorization
+documents = [" ".join(doc) for doc in spacy_lemmatized_docs]
+
+# One-Hot Encoding
+
+vectorizer_one = CountVectorizer(vocabulary=vocabulary, binary=True)
+
+#fit and transform the documents
+X= vectorizer_one.fit_transform(documents)
+# Get the feature names(vocabulary)
+feature_names = vectorizer_one.get_feature_names_out()
+
+#Display the feature names and the shape of the document-term matrix
+# print("Feature Names:", feature_names)
+# print("Document-Term Matrix Shape:", X.shape)
+
+# If you want to see the frequency count of each word in the document
+
+frequency_counts = X.toarray()
+# print("Frequency Counts:\n", frequency_counts)
+
+df = pd.DataFrame(X.toarray(), columns=[feature_names])
+df.to_csv('data.txt', sep='\t', index=False)
+
+
 
