@@ -38,3 +38,7 @@ def preprocess_text(texts):
 train['user_review'] = preprocess_text(train['user_review']) 
 validation['user_review'] = preprocess_text(validation['user_review']) 
 test['user_review'] = preprocess_text(test['user_review']) 
+
+# Vectorization
+
+count_vectorizer_one = CountVectorizer(min_df=0.001, binary=True)
