@@ -42,3 +42,40 @@ test['user_review'] = preprocess_text(test['user_review'])
 # Vectorization
 
 count_vectorizer_one = CountVectorizer(min_df=0.001, binary=True)
+
+# fit_transform user_review
+count_vectorizer_one_train = count_vectorizer_one.fit_transform(train['user_review'])
+
+# Building a Navie Bayes Model
+
+# Navie Bayes classifier
+navie_bayes_classifier = BernoulliNB()
+# Create the navie bayes model for the train data
+navie_bayes_classifier.fit(count_vectorizer_one_train, train['user_suggestion'])
+navie_bayes_classifier.score(count_vectorizer_one_train, train['user_review'])
+##create the naive bayes model for the validation data
+count_vectorizer_one_val = count_vectorizer_one.transform(validation['user_review'])
+navie_bayes_classifier.score(count_vectorizer_one_val, validation['user_suggestion'])
+
+# Count Vectorizer
+
+# initialize count_vectorizer and name it count_vectorizer
+count_vectorizer = CountVectorizer(min_df=0.001)
+
+#fit_transform user_review
+count_vectorizer_train = count_vectorizer.fit_transform(train['user_review'])
+
+#Buliding a Navie Bayes Model using count vectorization
+
+#Navie Bayes classifier
+navie_bayes_classifier = MultinomialNB()
+#create the nvvie bayes model forthe train data
+navie_bayes_classifier.fit(count_vectorizer_train, train['user_suggestion'])
+navie_bayes_classifier.score(count_vectorizer_train, train['user_suggestion'])
+
+##create the naive bayes model for the validation data
+count_vectorizer_val = count_vectorizer.transform(validation['user_review'])
+
+#One vs Count Vectorization
+
+
