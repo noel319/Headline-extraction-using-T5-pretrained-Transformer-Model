@@ -30,66 +30,87 @@ def preprocess_text(texts):
         lemmatized_tokens = [ token.lemma_.lower() for token in doc if token.is_alpha and token.lemma_ not in nlp.Defaults.stop_words]
         # Join the lemmatized tokens into a string
         processed_text = " ".join(lemmatized_tokens)
-        processed_texts.append(preprocess_text)
+        processed_texts.append(processed_text)
     return processed_texts
 
 # apply preprocess_text function to user_review column
 
-train['user_review'] = preprocess_text(train['user_review']) 
-validation['user_review'] = preprocess_text(validation['user_review']) 
-test['user_review'] = preprocess_text(test['user_review']) 
 
+#model
+ # naive Bayes classifier
+naive_bayes_classifier_bernoulli = BernoulliNB()
+#naive Bayes classifier
+naive_bayes_classifier_multinomial = MultinomialNB()
 # Vectorization
+def build_model_ohe():
+    count_vectorizer_ohe = CountVectorizer(min_df=0.001, binary=True)
 
-count_vectorizer_ohe = CountVectorizer(min_df=0.001, binary=True)
+    # fit_transform user_review
+    count_vectorizer_ohe_train = count_vectorizer_ohe.fit_transform(train['user_review'])
 
-# fit_transform user_review
-count_vectorizer_ohe_train = count_vectorizer_ohe.fit_transform(train['user_review'])
+    # Building a naive Bayes Model
 
-# Building a naive Bayes Model
-
-# naive Bayes classifier
-naive_bayes_classifier = BernoulliNB()
-# Create the naive bayes model for the train data
-naive_bayes_classifier.fit(count_vectorizer_ohe_train, train['user_suggestion'])
-naive_bayes_classifier.score(count_vectorizer_ohe_train, train['user_review'])
-##create the naive bayes model for the validation data
-count_vectorizer_ohe_val = count_vectorizer_ohe.transform(validation['user_review'])
-naive_bayes_classifier.score(count_vectorizer_ohe_val, validation['user_suggestion'])
-
+   
+    # Create the naive bayes model for the train data
+    naive_bayes_classifier_bernoulli.fit(count_vectorizer_ohe_train, train['user_suggestion'])
+    num = naive_bayes_classifier_bernoulli.score(count_vectorizer_ohe_train, train['user_review'])
+    print("naive_bayes_classifier_bernoulli train:\n",num)
+    ##create the naive bayes model for the validation data
+    count_vectorizer_ohe_val = count_vectorizer_ohe.transform(validation['user_review'])
+    num = naive_bayes_classifier_bernoulli.score(count_vectorizer_ohe_val, validation['user_suggestion'])
+    print("naive_bayes_classifier_bernoulli validation:\n", num)
 # Count Vectorizer
 
-# initialize count_vectorizer and name it count_vectorizer
-count_vectorizer = CountVectorizer(min_df=0.001)
+def build_model_countvector():
+    # initialize count_vectorizer and name it count_vectorizer
+    count_vectorizer = CountVectorizer(min_df=0.001)
 
-#fit_transform user_review
-count_vectorizer_train = count_vectorizer.fit_transform(train['user_review'])
+    #fit_transform user_review
+    count_vectorizer_train = count_vectorizer.fit_transform(train['user_review'])
 
-#Buliding a naive Bayes Model using count vectorization
+    #Buliding a naive Bayes Model using count vectorization
+    
+    #create the nvvie bayes model forthe train data
+    naive_bayes_classifier_multinomial.fit(count_vectorizer_train, train['user_suggestion'])
+    num = naive_bayes_classifier_multinomial.score(count_vectorizer_train, train['user_suggestion'])
+    print("assifier_multinomial train:\n",num)
+    ##create the naive bayes model for the validation data
+    count_vectorizer_val = count_vectorizer.transform(validation['user_review'])
+    num = naive_bayes_classifier_multinomial.score(count_vectorizer_val, validation['user_suggestion'])
+    print("naive_bayes_classifier_multinomial validation:\n",num)
 
-#naive Bayes classifier
-naive_bayes_classifier = MultinomialNB()
-#create the nvvie bayes model forthe train data
-naive_bayes_classifier.fit(count_vectorizer_train, train['user_suggestion'])
-naive_bayes_classifier.score(count_vectorizer_train, train['user_suggestion'])
+def fun_tfidf():
+    #TF-IDF
+    # import TfidfVectorizer
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    # initialize tfifd vectorizer
+    tfidf_vectorizer = TfidfVectorizer(min_df = 0.001)
+    #create the naive nabyes model for the train data using tfidf
+    tfidf_vectorizer_train = tfidf_vectorizer.fit_transform(train['user_review'])
+    naive_bayes_classifier_multinomial.fit(tfidf_vectorizer_train, train['user_suggestion'])
+    num = naive_bayes_classifier_multinomial.score(tfidf_vectorizer_train, train['user_suggestion'])
+    print("naive_bayes_classifier_multinomial train:\m", num)
+    #create the naive bayes model for the validation data using tfidf
 
-##create the naive bayes model for the validation data
-count_vectorizer_val = count_vectorizer.transform(validation['user_review'])
-naive_bayes_classifier.score(count_vectorizer_val, validation['user_suggestion'])
+    tfidf_vectorizer_val = tfidf_vectorizer.transform(validation['user_review'])
+    num = naive_bayes_classifier_multinomial.score(tfidf_vectorizer_val, validation['user_suggestion'])
+    print("naive_bayes_classifier_multinomial validation:\n", num)
+    # Using n-grams with TfIdf
+def fun_build_ngram():
 
-#TF-IDF
-# import TfidfVectorizer
-from sklearn.feature_extraction.text import TfidfVectorizer
-# initialize tfifd vectorizer
-tfidf_vectorizer = TfidfVectorizer(min_df = 0.001)
-#create the naive nabyes model for the train data using tfidf
-tfidf_vectorizer_train = tfidf_vectorizer.fit_transform(train['user_review'])
-naive_bayes_classifier.fit(tfidf_vectorizer_train, train['user_suggestion'])
-naive_bayes_classifier.score(tfidf_vectorizer_train, train['user_suggestion'])
+    tfidf_ngram_vectorizer = TfidfVectorizer(min_df=0.001, ngram_range=(1,3))
 
-#create the naive bayes model for the validation data using tfidf
+    #create the naive bayes model for the train data using tfidf and ngram
+    tfidf_ngram_vectorizer_train = tfidf_ngram_vectorizer.fit_transform(train['user_review'])
+    naive_bayes_classifier_multinomial.fit(tfidf_ngram_vectorizer_train, train['user_suggestion'])
+    num = naive_bayes_classifier_multinomial.score(tfidf_ngram_vectorizer_train, train['user_suggestion'])
+    print("naive_bayes_classifier_multinomial train:\n", num)
 
-tfidf_vectorizer_val = tfidf_vectorizer.transform(validation['user_review'])
-naive_bayes_classifier.score(tfidf_vectorizer_val, validation['user_suggestion'])
-
-
+    ss = tfidf_ngram_vectorizer.get_feature_names_out()[150:160]
+    print(ss)
+# Main
+if __name__ == '__main__':
+    train['user_review'] = preprocess_text(train['user_review']) 
+    validation['user_review'] = preprocess_text(validation['user_review']) 
+    test['user_review'] = preprocess_text(test['user_review'])     
+    fun_build_ngram()
