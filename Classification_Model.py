@@ -41,21 +41,21 @@ test['user_review'] = preprocess_text(test['user_review'])
 
 # Vectorization
 
-count_vectorizer_one = CountVectorizer(min_df=0.001, binary=True)
+count_vectorizer_ohe = CountVectorizer(min_df=0.001, binary=True)
 
 # fit_transform user_review
-count_vectorizer_one_train = count_vectorizer_one.fit_transform(train['user_review'])
+count_vectorizer_ohe_train = count_vectorizer_ohe.fit_transform(train['user_review'])
 
-# Building a Navie Bayes Model
+# Building a naive Bayes Model
 
-# Navie Bayes classifier
-navie_bayes_classifier = BernoulliNB()
-# Create the navie bayes model for the train data
-navie_bayes_classifier.fit(count_vectorizer_one_train, train['user_suggestion'])
-navie_bayes_classifier.score(count_vectorizer_one_train, train['user_review'])
+# naive Bayes classifier
+naive_bayes_classifier = BernoulliNB()
+# Create the naive bayes model for the train data
+naive_bayes_classifier.fit(count_vectorizer_ohe_train, train['user_suggestion'])
+naive_bayes_classifier.score(count_vectorizer_ohe_train, train['user_review'])
 ##create the naive bayes model for the validation data
-count_vectorizer_one_val = count_vectorizer_one.transform(validation['user_review'])
-navie_bayes_classifier.score(count_vectorizer_one_val, validation['user_suggestion'])
+count_vectorizer_ohe_val = count_vectorizer_ohe.transform(validation['user_review'])
+naive_bayes_classifier.score(count_vectorizer_ohe_val, validation['user_suggestion'])
 
 # Count Vectorizer
 
@@ -65,17 +65,31 @@ count_vectorizer = CountVectorizer(min_df=0.001)
 #fit_transform user_review
 count_vectorizer_train = count_vectorizer.fit_transform(train['user_review'])
 
-#Buliding a Navie Bayes Model using count vectorization
+#Buliding a naive Bayes Model using count vectorization
 
-#Navie Bayes classifier
-navie_bayes_classifier = MultinomialNB()
+#naive Bayes classifier
+naive_bayes_classifier = MultinomialNB()
 #create the nvvie bayes model forthe train data
-navie_bayes_classifier.fit(count_vectorizer_train, train['user_suggestion'])
-navie_bayes_classifier.score(count_vectorizer_train, train['user_suggestion'])
+naive_bayes_classifier.fit(count_vectorizer_train, train['user_suggestion'])
+naive_bayes_classifier.score(count_vectorizer_train, train['user_suggestion'])
 
 ##create the naive bayes model for the validation data
 count_vectorizer_val = count_vectorizer.transform(validation['user_review'])
+naive_bayes_classifier.score(count_vectorizer_val, validation['user_suggestion'])
 
-#One vs Count Vectorization
+#TF-IDF
+# import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+# initialize tfifd vectorizer
+tfidf_vectorizer = TfidfVectorizer(min_df = 0.001)
+#create the naive nabyes model for the train data using tfidf
+tfidf_vectorizer_train = tfidf_vectorizer.fit_transform(train['user_review'])
+naive_bayes_classifier.fit(tfidf_vectorizer_train, train['user_suggestion'])
+naive_bayes_classifier.score(tfidf_vectorizer_train, train['user_suggestion'])
+
+#create the naive bayes model for the validation data using tfidf
+
+tfidf_vectorizer_val = tfidf_vectorizer.transform(validation['user_review'])
+naive_bayes_classifier.score(tfidf_vectorizer_val, validation['user_suggestion'])
 
 
