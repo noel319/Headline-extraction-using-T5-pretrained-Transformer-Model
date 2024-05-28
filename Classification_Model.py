@@ -106,8 +106,54 @@ def fun_build_ngram():
     num = naive_bayes_classifier_multinomial.score(tfidf_ngram_vectorizer_train, train['user_suggestion'])
     print("naive_bayes_classifier_multinomial train:\n", num)
 
-    ss = tfidf_ngram_vectorizer.get_feature_names_out()[150:160]
+    ss = tfidf_ngram_vectorizer.get_feature_names_out()[160:163]
     print(ss)
+    #create the naive bayes model for the validation data using tfidf and ngram
+    tfidf_ngram_vectorizer_val = tfidf_ngram_vectorizer.transform(validation['user_review'])
+    naive_bayes_classifier_multinomial.score(tfidf_ngram_vectorizer_val, validation['user_suggestion'])
+
+    count_ngram_vectorizer = CountVectorizer(min_df=0.001, ngram_range=(1,3))
+
+    #create the naive bayes model for the train data using count vectorizer and ngram
+    count_ngram_vectorizer_train = count_ngram_vectorizer.fit_transform(train['user_review'])
+    naive_bayes_classifier_multinomial.fit(count_ngram_vectorizer_train, train['user_suggestion'])
+    naive_bayes_classifier_multinomial.score(count_ngram_vectorizer_train, train['user_suggestion'])
+
+    #create the naive bayes model for the validation data using count vectorizer and ngram
+
+    count_ngram_vectorizer_val = count_ngram_vectorizer.transform(validation['user_review'])
+    naive_bayes_classifier_multinomial.score(count_ngram_vectorizer_val, validation['user_suggestion'])
+
+
+
+# POS Tagging and NER
+# Load spaCy model
+nlp = spacy.load("en_core_web_sm")
+def preprocess_text_spacy(processed_texts):
+    # Tokenization and POS tagging
+    pos_texts = []
+    for doc in nlp.pipe(processed_texts):
+        pos_tags = [token.pos_ for token in doc]
+        pos_text = " ".join(pos_tags)
+        pos_texts.append(pos_text)
+
+    # Named Entity Recognition (NER)
+    ner_texts = []
+    for doc in nlp.pipe(processed_texts):     
+        ner_tags = [token.ent_type_ if token.ent_type_ else "O" for token in doc]
+        ner_text = " ".join(ner_tags)
+        ner_texts.append(ner_text)
+    
+    return [pos_texts, ner_texts]
+
+# applying preprocess_text_spacy function touser_review column for train data
+pos_texts, ner_texts = preprocess_text_spacy(train['user_review'])
+# adding the lists as column to the dataset
+train['pos_tags'] = pos_texts
+train['ner_tags'] = ner_texts
+
+train.head()
+
 # Main
 if __name__ == '__main__':
     train['user_review'] = preprocess_text(train['user_review']) 
