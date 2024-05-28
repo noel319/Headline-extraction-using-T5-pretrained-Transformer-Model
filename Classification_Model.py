@@ -154,6 +154,32 @@ train['ner_tags'] = ner_texts
 
 train.head()
 
+from spacy import displacy
+
+text= train['user_review'][3]
+doc = nlp(text)
+displacy.render(doc, style="ent")
+
+text1= "India is a country with leading IT companies such as Infosys, TCS, Wipro etc. Most of them make millions of dollars in revenues and are based out of Hyderabad"
+text1
+doc = nlp(text1)
+displacy.render(doc, style="ent")
+del train['pos_tags']
+del train['ner_tags']
+def remove_noun(df):
+
+  nlp = spacy.load("en_core_web_sm")  
+
+  # Process user_review column
+  filtered_reviews = []
+  for review in df['user_review']:
+    filtered_review = " ".join([token.text for token in nlp(review) if token.pos_ not in ['NOUN', 'PROPN']])
+    filtered_reviews.append(filtered_review)
+  
+  return filtered_reviews
+
+
+
 # Main
 if __name__ == '__main__':
     train['user_review'] = preprocess_text(train['user_review']) 
