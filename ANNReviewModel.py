@@ -106,7 +106,7 @@ for epoch in range(num_epochs):
 # Plotting the training loss
 plt.figure(figsize=(10,5))
 plt.plot(range(1, num_epochs+1), losses, marker='o', linestyle='-',color='b',label = 'train_loss')
-plt.plot(range(1,num_epochs+1), val_losses, marker='o',linestyle='-',color='b',label = 'val_loss')
+plt.plot(range(1,num_epochs+1), val_losses, marker='o',linestyle='-',color='r',label = 'val_loss')
 plt.title('Training Loss per Epoch')
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
