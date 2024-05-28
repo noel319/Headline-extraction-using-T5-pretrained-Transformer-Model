@@ -113,3 +113,19 @@ plt.ylabel('Loss')
 plt.legend()
 plt.grid(True)
 plt.show() 
+def calculate_accuracy(loader):
+    model.eval()  # Set the model to evaluation mode
+    correct, total = 0, 0
+    with torch.no_grad():
+        for inputs, labels in loader:
+            outputs = model(inputs)
+            predicted = outputs.squeeze() > 0.5  # Apply threshold to convert probabilities to binary predictions
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+    return 100 * correct / total
+
+train_accuracy = calculate_accuracy(train_loader)
+val_accuracy = calculate_accuracy(val_loader)
+
+print(f'Training Accuracy: {train_accuracy}%')
+print(f'Validation Accuracy: {val_accuracy}%')
