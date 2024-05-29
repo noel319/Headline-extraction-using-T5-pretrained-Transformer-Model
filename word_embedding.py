@@ -26,7 +26,7 @@ def preprocess_text(text):
     if not isinstance(text, str):
         return[]
     # Keep only letters and whitespaces
-    pattern = f"[a-zA-z\s]"
+    pattern = f"[a-zA-Z\s]"
     text = ''.join(re.findall(pattern, text))
     # Convert to lowercasee
     text = text.lower()
@@ -34,3 +34,15 @@ def preprocess_text(text):
     # Tokenize the text
     tokens = nltk.word_tokenize(text)
     return tokens
+# apply the preprodcess text to
+train['user_review'] = train.user_review.apply(preprocess_text)
+validation['user_review'] = validation.user_review.apply(preprocess_text)
+test['user_review'] = test.user_review.apply(preprocess_text)
+
+# Fetch embedding 
+word2vec_model = Word2Vec(sentences=train.user_review.values.tolist(), vector_size=100, min_count=1, workers=4)
+
+# Get vocabulary size
+vocab_size = len(word2vec_model.wv)
+print(vocab_size)
+
