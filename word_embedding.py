@@ -46,3 +46,23 @@ word2vec_model = Word2Vec(sentences=train.user_review.values.tolist(), vector_si
 vocab_size = len(word2vec_model.wv)
 print(vocab_size)
 
+# Convert text to Word2Vec embeddings
+def text_to_embeddings(text, word2vec_model, seq_length):
+    embeddings = []
+    
+    for i, word in enumerate(text):
+        if word in word2vec_model.wv:
+            if i == seq_length:
+                break
+            embeddings.append(word2vec_model.wv[word])
+        else:
+            continue
+        
+    # Padding the sequences
+    if len(embeddings) < seq_length:
+        zero_padding = [np.zeros(word2vec_model.vector_size) \
+                        for _ in range(seq_length - len(embeddings))]
+
+        embeddings = embeddings + zero_padding
+
+    return embeddings[:seq_length]
