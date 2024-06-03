@@ -123,3 +123,17 @@ class SentimentRNN(nn.Module):
         # Apply the sigmoid activation
         out = self.sigmoid(out)
         return out
+# Initialize model, loss function, and optimizer
+model = SentimentRNN(input_size, hidden_size, output_size, dropout_rate)
+criterion = nn.BCELoss()
+optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+def calculate_accuracy(loader):
+    model.eval()
+    correct, total = 0, 0
+    with torch.no_grad():
+        for inputs, labels in loader:
+            outputs = model(inputs)
+            predicted = outputs.squeeze() > 0.5
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+    return 100 * correct / total
