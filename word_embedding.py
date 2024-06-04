@@ -137,3 +137,78 @@ def calculate_accuracy(loader):
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
     return 100 * correct / total
+
+#Training loop
+import matplotlib.pyplot as plt
+
+num_epochs = 30  # Number of epochs
+losses = []  # List to store the average train loss per epoch
+val_losses = []  # List to store the average validation loss per epoch
+best_val_loss = float('inf')  # Initialize the best validation loss to infinity
+best_epoch = 0  # Epoch with the best validation loss
+patience = 0
+max_patience = 3  # Maximum epochs to wait for improvement
+
+for epoch in range(num_epochs):
+    model.train()  # Set the model to training mode
+    total_loss = 0
+    total_val_loss = 0
+    count = 0
+    val_count = 0
+    for inputs, labels in train_loader:
+        optimizer.zero_grad()
+        outputs = model(inputs)
+        outputs = outputs.squeeze()
+        loss = criterion(outputs, labels.float())
+        loss.backward()
+        optimizer.step()
+        total_loss += loss.item()
+        count += 1
+    average_loss = total_loss / count
+    losses.append(average_loss)
+
+    model.eval()  # Set the model to evaluation mode
+    with torch.no_grad():
+        for inputs, labels in val_loader:
+            val_outputs = model(inputs)
+            val_outputs = val_outputs.squeeze()
+            val_loss = criterion(val_outputs, labels.float())
+            total_val_loss += val_loss.item()
+            val_count += 1
+    average_val_loss = total_val_loss / val_count
+    val_losses.append(average_val_loss)
+    print(f'Epoch {epoch+1}/{num_epochs}, Loss: {average_loss:.4f}, Val Loss: {average_val_loss:.4f}')
+    
+    # Check if the current validation loss is the lowest; if so, save the model
+    if average_val_loss < best_val_loss:
+        best_val_loss = average_val_loss
+        best_epoch = epoch
+        torch.save(model.state_dict(), 'rnn_best_model.pth')  # Save the best model
+        patience = 0   
+    else:
+        patience += 1
+
+    if patience >= max_patience:
+        print(f'Early stopped at {epoch+1}')
+        break  # Stop training
+
+print(f'Lowest Validation Loss: {best_val_loss:.4f} at Epoch {best_epoch + 1}')
+
+# Plotting the training and validation losses
+
+plt.figure(figsize=(10, 5))
+plt.plot(range(1, (len(losses)+1)), losses, 'bo-', label='Training Loss')
+plt.plot(range(1, (len(losses)+1)), val_losses, 'ro-', label='Validation Loss')
+plt.title('Training and Validation Loss per Epoch')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# Load the best model and calculate accuracy only for that
+model.load_state_dict(torch.load('rnn_best_model.pth'))
+train_accuracy = calculate_accuracy(train_loader)
+val_accuracy = calculate_accuracy(val_loader)
+print(f'Best Model Training Accuracy: {train_accuracy}%')
+print(f'Best Model Validation Accuracy: {val_accuracy}%')
